@@ -1,0 +1,55 @@
+[System]
+Name='measurement'
+Type='mamdani'
+Version=2.0
+NumInputs=2
+NumOutputs=2
+NumRules=9
+AndMethod='min'
+OrMethod='max'
+ImpMethod='min'
+AggMethod='max'
+DefuzzMethod='centroid'
+
+[Input1]
+Name='input1'
+Range=[62.88 87.8]
+NumMFs=3
+MF1='low':'gaussmf',[4.29159160049239 63.2]
+MF2='mid':'gaussmf',[4.04497371477913 74.4]
+MF3='high':'gaussmf',[5.45925179407353 87.8]
+
+[Input2]
+Name='input2'
+Range=[160.1 161.17]
+NumMFs=3
+MF1='low':'gaussmf',[0.246820105189502 160]
+MF2='mid':'gaussmf',[0.142 160.589682539683]
+MF3='high':'gaussmf',[0.19 161.171693121693]
+
+[Output1]
+Name='output1'
+Range=[3.7 28.6]
+NumMFs=3
+MF1='low':'gaussmf',[4.78147951614529 3.9]
+MF2='mid':'gaussmf',[3.89 15.8880952380952]
+MF3='high':'gaussmf',[4.86236730664891 28.1]
+
+[Output2]
+Name='output2'
+Range=[172.9 240.2]
+NumMFs=3
+MF1='low':'gaussmf',[11.6922177731449 174]
+MF2='mid':'gaussmf',[11.2 205.246296296296]
+MF3='high':'gaussmf',[13.8175444686276 240]
+
+[Rules]
+3 2, 1 3 (1) : 1
+2 1, 2 2 (1) : 1
+2 2, 2 1 (1) : 1
+1 2, 3 1 (1) : 1
+3 1, 2 2 (1) : 1
+2 3, 2 1 (1) : 1
+-3 -3, 1 2 (1) : 1
+1 -1, 3 1 (1) : 1
+1 -3, 3 1 (1) : 1
