@@ -1,0 +1,173 @@
+function [theta] = Parameter_estimation_main_HEKF()
+
+%%% Initialization
+
+
+% model parameters
+m2	  =	0.7152	;	% glc_6P
+m3	  =	0.6143	;	% glc arbitary
+m4	  =	0.922	;	% f_6P
+m5	  =	0.6691	;	% f_16_BP 
+m6	  =	0.1878	;	% f_26_BP arbitary
+m7	  =	0.3506	;	% dhap arbitary
+m8	  =	0.5922	;	% ga_3P
+m9	  =	0.9618	;	% BPG_13
+m10	  =	0.2324;%0.9684	;	% PG_3
+m11	  =	0.2419	;	% PG_2
+m12	  =	0.24725;%0.9735	;	% PEP
+m13	  =	0.9615	;	% PYR arbitary
+m14	  =	0.5368	;	% LACTATE arbitary (only produced)
+
+m31	  =	0.7354	;	% ATP
+m32	  =	0.5286	;	% ADP arbitary
+m33	  =	0.3492	;	% NADH
+m34	  =	0.1416	;	% NAD
+
+%%%%% SIGNALLING MOLECULE INITIAL CONCENTRATION s in nM %%%%%
+
+
+
+%%%%% ENZYME/GENE INITIAL CONCENTRATION g in nM (Assumed all) %%%%%
+g3	=	0.735;	%Hexokinase				
+g6	=	0.6275;	%Phosphofructokinase_1				
+g10	=	0.719;	%Aldolase
+g12	=	0.7627;	%Glyceraldehyde-3-phosphate_dehydrogenase				
+g13	=	0.4552;	%Phosphoglycerate_kinase				
+g16	=	0.6981;	%Pyruvate_kinase				
+g17	=	0.1176;	%Lactate_dehydrogenase	
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%% METABOLIC REACTION SUBSTRATE CONSTANT km in nM %%%%%
+
+km3	 =	0.052076	;
+km4	 =	0.4479	;
+km5	 =	0.052373	;
+km6	 =	0.4289	;
+km7	 =	0.054248	;
+km8	 =	0.4654	;
+km9	 =	0.053261	;
+km10	 =	0.07412	;
+km11	 =	0.1	;
+km12	 =	0.4415	;
+km13	 =	0.09692	;
+km14	 =	0.7	;
+km15	 =	0.051036	;
+km16	 =	0.4729	;
+km17	 =	0.2;
+km18	 =	0.4658	;
+km19	 =	0.053377	;
+km20	 =	0.3951	;
+km21	 =	0.073413	;
+km22	 =	0.42947	;
+km23	 =	0.13745	;
+km24	 =	0.7	;
+ 
+% 
+% %%%%% METABOLIC REACTION ENZYME RATE CONATANT K in S^-1  %%%%%
+% 
+ 
+K3	 =	0.02	;	% hk
+K4	 =	0.05	;	% g6Pase
+K5	 =	0.0812	;	% pgi
+K6	 =	0.09	;	% pfk1
+K7	 =	0;%0.017	;	% f16Bpase
+K8	 =	0.09	;	% pfk2
+K9	 =	0;%0.0766	;	% f26Bpase
+K10	 =	0.0826	;	% ald
+K11	 =	0.0899	;	% tpi
+K12	 =	0.01	;	% gcld3PD
+K13	 =	0.0532	;	% pglc_kn
+K14	 =	0.06	;	% pglc_m
+K15	 =	0.0727	;	% enl
+K16	 =	0.2	;	% pyrk
+K17	 =	0.01	;	% lacd
+
+
+F4	=	0.5;
+F5	=	0.5;
+F7	=	0.5;
+F8	=	0.5;
+F11	=	0.5;
+F15	=	0.5;
+F16	=	0.5;
+F19	=	0.5;
+F20	=	0.5;
+F23	=	0.5;
+F27	=	0.5;
+F28	=	0.5;
+
+
+%%% Number of parameters = 35 
+p = [km3,km4,km5,km6,km7,km8,km9,km10,km11,km12,km13,km14,km15,km16,km17,km18,km19,km20,km21,km22,km23,km24,K3,K4,K5,K6,K8,K10,K11,K12,K13,K14,K15,K16,K17,F4,F5,F7,F8,F11,F15,F16,F19,F20,F23,F27,F28];
+
+
+% Model used for estimation
+model =@(t,y) CCM_three_time_scale_model_HEKF(t,y);
+jac=@(t,y) parameter_estimation_jac_HEKF(t,y);
+
+
+% Set up time vector 
+
+T  = 10;
+Ts = 0.002;
+Tspan = [0 Ts];
+time = [0:Ts:T]';
+
+
+x0 = [0.7152, 0.6143, 0.922, 0.6691, 0.1878, 0.3506, 0.5922, 0.9618, 0.2324, 0.2419, 0.24725, 0.9615, 0.5368, 0.7354, 0.5286, 0.3492, 0.1416, 0.735, 0.6275, 0.719, 0.7627, 0.4552, 0.6981, 0.1176];
+%x0 = [0.7152, 0.6143, 0.922, 0.6691, 0.1878, 0.3506];
+
+
+% Noise covariance (%)
+R1=100;
+
+% Dimensions
+S=length(x0);
+P=length(p);
+N=S+P;
+
+
+%%% Obtain measurement signal
+
+H = eye(24);
+H=[H zeros(size(H,1),P)];
+
+
+Parameter_estimation_measurement = load('Parameter_estimation_measurement.mat');
+for v = fieldnames(Parameter_estimation_measurement)
+    measured_data = Parameter_estimation_measurement.(v{1});
+end
+measured_data = measured_data';   
+
+
+
+% Measurement noise covariance
+R = eye(24)*0.001;
+
+%%% HEKF run
+
+% Process noise
+Q=0.01*eye(71);
+
+xe0 = [measured_data(1,1),  measured_data(2,1), measured_data(3,1), measured_data(4,1), measured_data(5,1),  measured_data(6,1),  measured_data(7,1), measured_data(8,1), measured_data(9,1), measured_data(10,1), measured_data(11,1),  measured_data(12,1), measured_data(13,1), measured_data(14,1), measured_data(15,1),  measured_data(16,1),  measured_data(17,1), measured_data(18,1), measured_data(19,1), measured_data(20,1),  measured_data(21,1),  measured_data(22,1), measured_data(23,1), measured_data(24,1), 0.052076, 0.4479, 0.052373, 0.4289, 0.054248, 0.4654, 0.053261, 0.07412, 0.052933, 0.4415, 0.09692, 0.41931,	0.051036, 0.4729, 0.13405, 0.4658, 0.053377, 0.3951, 0.073413, 0.42947, 0.13745, 0.49851, 0.09,	0.01, 0.0812, 0.09,	0.09, 0.0826, 0.0899, 0.076, 0.0532, 0.0755, 0.0727, 0.05, 0.01, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]';
+Pe0=eye(71);
+
+
+% State constraints Dx<=d
+D = -eye(N);
+d = -0.0001*ones(N,1);
+
+% Invoke Kalman filter function
+[xe,Pe,R]=parameter_estimation_filter_HEKF(time, model, jac, measured_data, H , Q, R, xe0, Pe0, D, d);
+
+%%% Estimation results
+theta=zeros(size(p));
+
+for ii=1:P
+    theta(ii)=mean(xe(ii+S,end-500:end));
+end
+
+
+end
+
+
