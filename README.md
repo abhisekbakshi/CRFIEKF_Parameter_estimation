@@ -25,6 +25,9 @@ In order to validate the model, based on parameter values estimated by the propo
 
 ## Repository structure:  
 The repository contains a number of folders. The description about the folders are given below. 
-- **1)	Glycolysis pathway:** This folder contains the matlab files and FIS files tp estimation of parameter of glycolysis pathway. 
-- **2)	JAK/STAT signaling pathway:** This folder contains the matlab files and FIS files tp estimation of parameter of JAK/STAT signaling pathway.
-- **3)	Ras signaling pathway:** This folder contains the matlab files and FIS files tp estimation of parameter of Ras signaling pathway.
+- **1)	General Glycolysis pathway:** This folder contains the matlab files and FIS files tp estimation of parameter of glycolysis pathway of human erythrocytes. 
+- **5) Generic branch pathway:** This folder contains the matlab files and FIS files tp estimation of parameter of a generic branch pathway model.
+- **4) IL6 dependent Jak-STAT3 pathway:** This folder contains the matlab files and FIS files tp estimation of parameter of IL6 dependent Jak-STAT3 pathway.
+- **2)	JAK/STAT pathway:** This folder contains the matlab files and FIS files tp estimation of parameter of JAK/STAT signaling pathway.
+- **3)	Ras pathway:** This folder contains the matlab files and FIS files tp estimation of parameter of Ras signaling pathway.
+- **4) Yeast glycolysis pathway:** This folder contains the matlab files and FIS files tp estimation of parameter of glycolysis pathway of yeast cell.
