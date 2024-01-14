@@ -1,4 +1,4 @@
-# PARAMETER-ESTIMATION-OF-BIOCHEMICAL-PATHWAY
+# PARAMETER-ESTIMATION-OF-BIOCHEMICAL-PATHWAY-WITHOUT-EXPERIMENTAL-MEASUREMENT
 
 ## Motivation:
 The trajectory of various molecules, involved in biochemical pathways, depends on several parameters, such as rate constant and Michaelis Menten constant among others. Most of such parameters are unknown to us. Previous studies including hybrid extended Kalman filter (HEKF), a modified version ofextended Kalman filter (EKF), need experimental time course observations/measurements to accomplish parameter estimation efficiently. However, such observations may not always be readily available. Here, a novel fuzzy inference system (FIS) based method Constrained Regularized Fuzzy Inferred ExtendedKalman Filter (CRFIEKF) has been introduced to estimate unknown parameters of biochemical pathwayswithout prior knowledge of experimental transient observations. However, the relationships among differentmolecules, involved in the pathway need to be known. The FIS captures such relations with the notion of fuzzy logic.
